@@ -29,11 +29,24 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler({BusinessException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseException businessException(BusinessException exception) {
-        return ResponseException.builder()
+    public ResponseEntity<ResponseException> businessException(BusinessException exception) {
+        return ResponseEntity.badRequest().body(ResponseException.builder()
                 .exceptionMessage(exception.getMessage())
-                .build();
+                .build());
+    }
+
+    @ExceptionHandler({ValidationException.class})
+    public ResponseEntity<ResponseException> validationException(ValidationException exception) {
+        return ResponseEntity.badRequest().body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<ResponseException> illegalArgumentException(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
     }
 
 }
