@@ -11,9 +11,9 @@ public class InstallmentRequest {
     private Double value;
 
     @PositiveOrZero
-    private Integer paidAmount;
+    private Integer amountPaid;
 
     @Positive
-    private Integer pendingAmount;
+    private Integer amountPending;
 
 }
