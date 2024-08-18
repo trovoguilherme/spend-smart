@@ -3,11 +3,11 @@ package br.com.skeleton.spendsmart.service;
 import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.entity.Installment;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
-import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
 import br.com.skeleton.spendsmart.repository.InstallmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,31 +15,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseService {
 
-    private final ExpenseRepository purchaseRepository;
+    private final ExpenseRepository expenseRepository;
     private final InstallmentRepository installmentRepository;
 
     public List<Expense> findAll() {
-        return purchaseRepository.findAll();
+        return expenseRepository.findAll();
     }
 
+    @Transactional
     public Expense save(Expense expense) {
-        if (expense.getInstallment().getValue() > expense.getValue()) {
-            throw new BusinessException("O valor da parcela é maior que o valor total");
+        if (expense.getInstallment() != null) {
+
+            expense.getInstallment().validateAmount(expense.getValue());
+            expense.getInstallment().computePendingValue();
+            expense.getInstallment().computePaidValue();
+
+            Installment installment = installmentRepository.save(expense.getInstallment());
+            expense.setInstallment(installment);
         }
 
-        expense.getInstallment().setPendingValue(expense.getInstallment().getValue() * expense.getInstallment().getPendingAmount());
         expense.setStatus(ExpenseStatus.PENDING);
 
-        Installment installment = installmentRepository.save(expense.getInstallment());
-        expense.setInstallment(installment);
-
-        return purchaseRepository.save(expense);
+        return expenseRepository.save(expense);
     }
 
     public Expense update(final Long id) {
-        Expense expense = purchaseRepository.findById(id).get();
+        Expense expense = expenseRepository.findById(id).get();
         expense.setName("alterado");
-        return purchaseRepository.save(expense);
+        return expenseRepository.save(expense);
     }
 
 }
