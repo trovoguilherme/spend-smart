@@ -30,6 +30,7 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "NAME")
     private String name;
 
     @Column(name = "EXPENSE_VALUE")
@@ -39,9 +40,11 @@ public class Expense {
     @JoinColumn(name = "ID_INSTALLMENT", foreignKey = @ForeignKey(name = "FK_EXPENSE_INSTALLMENT"))
     private Installment installment;
 
+    @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private ExpenseStatus status;
 
+    @Column(name = "TYPE")
     @Enumerated(EnumType.STRING)
     private ExpenseType type;
 
