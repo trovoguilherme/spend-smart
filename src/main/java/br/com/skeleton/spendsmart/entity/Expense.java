@@ -56,4 +56,16 @@ public class Expense {
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
+    public void pay() {
+        if (installment != null) {
+            installment.pay(this);
+        } else {
+            paid();
+        }
+    }
+
+    public void paid() {
+        status = ExpenseStatus.PAID;
+    }
+
 }

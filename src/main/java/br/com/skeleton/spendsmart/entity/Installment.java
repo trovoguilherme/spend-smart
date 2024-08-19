@@ -34,6 +34,23 @@ public class Installment {
     @Column(name = "PAID_VALUE")
     private Double paidValue;
 
+    public void pay(Expense expense) {
+        if (!isPaid()) {
+            amountPaid++;
+            amountPending--;
+
+            paidValue += value;
+            pendingValue -= value;
+            if (isPaid()) {
+                expense.paid();
+            }
+        }
+    }
+
+    public boolean isPaid() {
+        return amountPending == 0;
+    }
+
     public void computePaidValue() {
         paidValue = value * amountPaid;
     }
