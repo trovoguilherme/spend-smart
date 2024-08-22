@@ -5,3 +5,7 @@ server:
 spring:
   application:
     name: spend-smart
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
