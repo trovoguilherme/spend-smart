@@ -1,27 +1,32 @@
 package br.com.skeleton.spendsmart.entity;
 
-import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
+import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
+@Setter
+@Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "EXPENSE")
 public class Expense {
 
@@ -36,9 +41,8 @@ public class Expense {
     @Column(name = "EXPENSE_VALUE")
     private Double value;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_INSTALLMENT", foreignKey = @ForeignKey(name = "FK_EXPENSE_INSTALLMENT"))
-    private Installment installment;
+    @OneToMany(mappedBy = "expense", fetch = FetchType.EAGER)
+    private List<Installment> installments;
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
@@ -55,17 +59,5 @@ public class Expense {
     @UpdateTimestamp
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
-
-    public void pay() {
-        if (installment != null) {
-            installment.pay(this);
-        } else {
-            paid();
-        }
-    }
-
-    public void paid() {
-        status = ExpenseStatus.PAID;
-    }
 
 }
