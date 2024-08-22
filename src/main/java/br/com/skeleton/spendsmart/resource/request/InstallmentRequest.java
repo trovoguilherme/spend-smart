@@ -1,19 +1,18 @@
 package br.com.skeleton.spendsmart.resource.request;
 
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class InstallmentRequest {
 
     @Positive
-    private Double value;
-
-    @PositiveOrZero
-    private Integer amountPaid;
-
-    @Positive
-    private Integer amountPending;
+    private Integer number;
 
 }
