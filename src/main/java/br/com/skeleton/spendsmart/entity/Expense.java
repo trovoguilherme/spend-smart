@@ -60,4 +60,8 @@ public class Expense {
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
+    public void setStatusToPending() {
+        this.status = ExpenseStatus.PENDING;
+    }
+
 }
