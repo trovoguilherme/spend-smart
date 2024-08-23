@@ -1,7 +1,6 @@
 package br.com.skeleton.spendsmart.service;
 
 import br.com.skeleton.spendsmart.entity.Installment;
-import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.NoUnpaidInstallmentException;
 import br.com.skeleton.spendsmart.repository.InstallmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ public class InstallmentService {
     }
 
     public List<Installment> pay(List<Installment> installments) {
-
         Installment unpaidInstallment = installments.stream().filter(installment -> !installment.getPaid())
                 .min(Comparator.comparingLong(Installment::getId)).orElseThrow(NoUnpaidInstallmentException::new);
 
@@ -40,4 +38,5 @@ public class InstallmentService {
 
         return installments;
     }
+
 }
