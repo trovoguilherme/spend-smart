@@ -3,6 +3,7 @@ package br.com.skeleton.spendsmart.mapper;
 import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.entity.Installment;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
+import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,9 +18,10 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ExpenseMapper {
 
-
     @Mapping(target = "installments", source = "source", qualifiedByName = "mapInstallments")
     Expense toExpense(ExpenseRequest source);
+
+    Expense toExpense(UpdateExpenseRequest source);
 
     ExpenseResponse toExpenseResponse(Expense source);
 
