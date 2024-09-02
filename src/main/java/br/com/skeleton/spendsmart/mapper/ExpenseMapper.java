@@ -4,7 +4,9 @@ import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.entity.Installment;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
+import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
+import br.com.skeleton.spendsmart.resource.response.InstallmentDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -25,6 +27,9 @@ public interface ExpenseMapper {
 
     ExpenseResponse toExpenseResponse(Expense source);
 
+    @Mapping(target = "installmentDetailResponse", source = "source", qualifiedByName = "mapInstallmentDetailResponse")
+    ExpenseDetailResponse toExpenseDetailResponse(Expense source);
+
     @Named("mapInstallments")
     default List<Installment> mapInstallments(ExpenseRequest expenseRequest) {
 
@@ -40,6 +45,19 @@ public interface ExpenseMapper {
         }
 
         return null;
+    }
+
+    @Named("mapInstallmentDetailResponse")
+    default InstallmentDetailResponse mapInstallmentDetailResponse(Expense source) {
+        if (source.getInstallments().isEmpty()) {
+            return null;
+        }
+        return InstallmentDetailResponse.builder()
+                .amountPaid(source.getPaidInstallmentsCount())
+                .amountUnpaid(source.getUnpaidInstallmentsCount())
+                .totalPaid(source.getTotalPaidAmount())
+                .totalUnpaid(source.getTotalUnpaidAmount())
+                .build();
     }
 
 }
