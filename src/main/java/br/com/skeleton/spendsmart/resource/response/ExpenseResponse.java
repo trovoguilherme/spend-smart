@@ -11,10 +11,10 @@ public class ExpenseResponse {
 
     private String value;
 
-    private List<InstallmentResponse> installments;
-
     private String status;
 
     private String type;
+
+    private List<InstallmentResponse> installments;
 
 }
