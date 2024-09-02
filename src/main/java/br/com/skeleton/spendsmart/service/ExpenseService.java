@@ -5,6 +5,7 @@ import br.com.skeleton.spendsmart.entity.Installment;
 import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
+import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +38,11 @@ public class ExpenseService {
         expense.setStatusToPending();
 
         Expense expenseSaved = repository.save(expense);
-        expense.getInstallments().forEach(installment -> installment.setExpense(expense));
-        installmentService.saveAll(expense.getInstallments());
+
+        if (expense.getInstallments() != null) {
+            expense.getInstallments().forEach(installment -> installment.setExpense(expense));
+            installmentService.saveAll(expense.getInstallments());
+        }
 
         return expenseSaved;
     }
