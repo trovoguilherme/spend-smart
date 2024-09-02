@@ -4,6 +4,7 @@ import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.mapper.ExpenseMapper;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
+import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
 import br.com.skeleton.spendsmart.service.ExpenseService;
 import jakarta.validation.Valid;
@@ -34,6 +35,12 @@ public class ExpenseResource {
         return ResponseEntity.ok(service.findAll().stream().map(expenseMapper::toExpenseResponse).toList());
     }
 
+    @GetMapping("/details")
+    public ResponseEntity<List<ExpenseDetailResponse>> findAllDetails() {
+        return ResponseEntity.ok(service.findAll().stream()
+                .map(expenseMapper::toExpenseDetailResponse).toList());
+    }
+
     @GetMapping("/{name}")
     public ResponseEntity<ExpenseResponse> findByName(@PathVariable String name) {
         return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.findByName(name)));
@@ -50,7 +57,6 @@ public class ExpenseResource {
         Expense expense = service.update(id, expenseMapper.toExpense(updateExpenseRequest));
         return ResponseEntity.ok(expenseMapper.toExpenseResponse(expense));
     }
-
 
     @PatchMapping("/{id}/pay")
     public ResponseEntity<ExpenseResponse> pay(@PathVariable final Long id) {
