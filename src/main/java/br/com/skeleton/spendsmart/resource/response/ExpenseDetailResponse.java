@@ -23,4 +23,6 @@ public class ExpenseDetailResponse {
 
     private String type;
 
+    private String paymentType;
+
 }

@@ -2,6 +2,7 @@ package br.com.skeleton.spendsmart.entity;
 
 import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
+import br.com.skeleton.spendsmart.entity.enums.PaymentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,6 +53,10 @@ public class Expense {
     @Column(name = "TYPE")
     @Enumerated(EnumType.STRING)
     private ExpenseType type;
+
+    @Column(name = "PAYMENT_TYPE")
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     @CreationTimestamp
     @Column(name = "CREATED_AT")

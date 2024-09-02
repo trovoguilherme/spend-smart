@@ -28,4 +28,7 @@ public class ExpenseRequest {
     @NotBlank(message = "Type não pode ser vazio ou nullo")
     private String type;
 
+    @NotBlank
+    private String paymentType;
+
 }
