@@ -19,6 +19,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -62,6 +63,32 @@ public class Expense {
 
     public void setStatusToPending() {
         this.status = ExpenseStatus.PENDING;
+    }
+
+    public BigDecimal getTotalUnpaidAmount() {
+        return installments.stream()
+                .filter(installment -> !installment.getPaid())
+                .map(Installment::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getTotalPaidAmount() {
+        return installments.stream()
+                .filter(Installment::getPaid)
+                .map(Installment::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Long getUnpaidInstallmentsCount() {
+        return installments.stream()
+                .filter(installment -> !installment.getPaid())
+                .count();
+    }
+
+    public Long getPaidInstallmentsCount() {
+        return installments.stream()
+                .filter(Installment::getPaid)
+                .count();
     }
 
 }
