@@ -61,7 +61,7 @@ public class ExpenseService {
     public Expense pay(Long id) {
         Expense expense = findById(id);
 
-        if (expense.getInstallments() != null) {
+        if (!expense.getInstallments().isEmpty()) {
             List<Installment> installments = installmentService.pay(expense.getInstallments());
 
             expense.setInstallments(installments);
