@@ -28,6 +28,13 @@ public class RestExceptionHandler {
                 .build());
     }
 
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<ResponseException> NotFoundException(NotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
+    }
+
     @ExceptionHandler({BusinessException.class})
     public ResponseEntity<ResponseException> businessException(BusinessException exception) {
         return ResponseEntity.badRequest().body(ResponseException.builder()
