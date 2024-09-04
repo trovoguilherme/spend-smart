@@ -1,5 +1,6 @@
 package br.com.skeleton.spendsmart.service;
 
+import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.entity.Installment;
 import br.com.skeleton.spendsmart.exception.NoUnpaidInstallmentException;
 import br.com.skeleton.spendsmart.repository.InstallmentRepository;
@@ -37,6 +38,10 @@ public class InstallmentService {
         }
 
         return installments;
+    }
+
+    public void deleteByExpense(Expense expense) {
+        repository.deleteAllByExpenseId(expense.getId());
     }
 
 }

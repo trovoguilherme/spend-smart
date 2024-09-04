@@ -79,4 +79,15 @@ public class ExpenseService {
         }
     }
 
+    @Transactional
+    public void deleteById(Long id) {
+        Expense expense = findById(id);
+
+        if (!expense.getInstallments().isEmpty()) {
+            installmentService.deleteByExpense(expense);
+        }
+
+        repository.deleteById(id);
+    }
+
 }

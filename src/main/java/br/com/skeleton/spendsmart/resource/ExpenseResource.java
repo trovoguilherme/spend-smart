@@ -10,6 +10,7 @@ import br.com.skeleton.spendsmart.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,6 +62,12 @@ public class ExpenseResource {
     @PatchMapping("/{id}/pay")
     public ResponseEntity<ExpenseResponse> pay(@PathVariable final Long id) {
         return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.pay(id)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable final Long id) {
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
