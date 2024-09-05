@@ -2,10 +2,12 @@ package br.com.skeleton.spendsmart.service;
 
 import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.entity.Installment;
+import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
+import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
+import br.com.skeleton.spendsmart.entity.enums.PaymentType;
 import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
-import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +21,8 @@ public class ExpenseService {
     private final ExpenseRepository repository;
     private final InstallmentService installmentService;
 
-    public List<Expense> findAll() {
-        return repository.findAll();
+    public List<Expense> findAll(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
+        return repository.findAllByFilter(expenseStatus, expenseType, paymentType);
     }
 
     public Expense findByName(String name) {
@@ -63,8 +65,14 @@ public class ExpenseService {
 
         if (!expense.getInstallments().isEmpty()) {
             List<Installment> installments = installmentService.pay(expense.getInstallments());
-
             expense.setInstallments(installments);
+
+            boolean allPaid = installments.stream().allMatch(Installment::getPaid);
+
+            if (allPaid) {
+                expense.setStatusToPaid();
+                repository.save(expense);
+            }
 
             return expense;
         } else {
