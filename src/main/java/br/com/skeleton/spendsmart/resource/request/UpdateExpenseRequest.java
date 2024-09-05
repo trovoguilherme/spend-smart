@@ -9,4 +9,6 @@ public class UpdateExpenseRequest {
 
     private String type;
 
+    private String paymentType;
+
 }
