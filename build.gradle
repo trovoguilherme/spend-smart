@@ -50,6 +50,9 @@ dependencies {
 	//Mapstruct
 	implementation 'org.mapstruct:mapstruct:1.6.0'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
+
+	//Javers
+	implementation 'org.javers:javers-core:7.6.1'
 }
 
 dependencyManagement {
