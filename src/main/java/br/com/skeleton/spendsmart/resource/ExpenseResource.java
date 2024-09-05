@@ -1,6 +1,9 @@
 package br.com.skeleton.spendsmart.resource;
 
 import br.com.skeleton.spendsmart.entity.Expense;
+import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
+import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
+import br.com.skeleton.spendsmart.entity.enums.PaymentType;
 import br.com.skeleton.spendsmart.mapper.ExpenseMapper;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
@@ -9,6 +12,7 @@ import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
 import br.com.skeleton.spendsmart.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +22,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/expense")
@@ -32,13 +38,18 @@ public class ExpenseResource {
     private final ExpenseService service;
 
     @GetMapping
-    public ResponseEntity<List<ExpenseResponse>> findAll() {
-        return ResponseEntity.ok(service.findAll().stream().map(expenseMapper::toExpenseResponse).toList());
+    public ResponseEntity<List<ExpenseResponse>> findAll(@RequestParam(required = false) ExpenseStatus expenseStatus,
+                                                         @RequestParam(required = false) ExpenseType expenseType,
+                                                         @RequestParam(required = false) PaymentType paymentType) {
+        return ResponseEntity.ok(service.findAll(expenseStatus, expenseType, paymentType)
+                .stream().map(expenseMapper::toExpenseResponse).toList());
     }
 
     @GetMapping("/details")
-    public ResponseEntity<List<ExpenseDetailResponse>> findAllDetails() {
-        return ResponseEntity.ok(service.findAll().stream()
+    public ResponseEntity<List<ExpenseDetailResponse>> findAllDetails(@RequestParam(required = false) ExpenseStatus expenseStatus,
+                                                                      @RequestParam(required = false) ExpenseType expenseType,
+                                                                      @RequestParam(required = false) PaymentType paymentType) {
+        return ResponseEntity.ok(service.findAll(expenseStatus, expenseType, paymentType).stream()
                 .map(expenseMapper::toExpenseDetailResponse).toList());
     }
 
