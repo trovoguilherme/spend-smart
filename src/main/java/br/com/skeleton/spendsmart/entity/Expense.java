@@ -70,6 +70,10 @@ public class Expense {
         this.status = ExpenseStatus.PENDING;
     }
 
+    public void setStatusToPaid() {
+        this.status = ExpenseStatus.PAID;
+    }
+
     public BigDecimal getTotalUnpaidAmount() {
         return installments.stream()
                 .filter(installment -> !installment.getPaid())
