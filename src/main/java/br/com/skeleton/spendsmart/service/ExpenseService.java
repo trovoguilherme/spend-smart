@@ -20,6 +20,7 @@ public class ExpenseService {
 
     private final ExpenseRepository repository;
     private final InstallmentService installmentService;
+    private final ExpenseHistoryService expenseHistoryService;
 
     public List<Expense> findAll(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
         return repository.findAllByFilter(expenseStatus, expenseType, paymentType);
@@ -49,13 +50,18 @@ public class ExpenseService {
         return expenseSaved;
     }
 
-    public Expense update(Long id, Expense expense) {
+    @Transactional
+    public Expense update(Long id, String changeAgent, Expense expense) {
         existsByName(expense.getName());
         Expense expenseFound = findById(id);
 
+        Expense expenseOld = new Expense(expenseFound);
+
         expenseFound.setName(expense.getName());
-        expenseFound.setValue(expense.getValue());
         expenseFound.setType(expense.getType());
+        expenseFound.setPaymentType(expense.getPaymentType());
+
+        expenseHistoryService.save(expenseOld, expenseFound, changeAgent);
 
         return repository.save(expenseFound);
     }
