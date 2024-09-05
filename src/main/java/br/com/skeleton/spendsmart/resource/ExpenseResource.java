@@ -1,14 +1,18 @@
 package br.com.skeleton.spendsmart.resource;
 
 import br.com.skeleton.spendsmart.entity.Expense;
+import br.com.skeleton.spendsmart.entity.ExpenseHistory;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import br.com.skeleton.spendsmart.entity.enums.PaymentType;
+import br.com.skeleton.spendsmart.mapper.ExpenseHistoryMapper;
 import br.com.skeleton.spendsmart.mapper.ExpenseMapper;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
 import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
+import br.com.skeleton.spendsmart.resource.response.ExpenseHistoryResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
+import br.com.skeleton.spendsmart.service.ExpenseHistoryService;
 import br.com.skeleton.spendsmart.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +40,9 @@ import java.util.List;
 public class ExpenseResource {
 
     private final ExpenseMapper expenseMapper;
+    private final ExpenseHistoryMapper expenseHistoryMapper;
     private final ExpenseService service;
+    private final ExpenseHistoryService expenseHistoryService;
 
     @GetMapping
     public ResponseEntity<List<ExpenseResponse>> findAll(@RequestParam(required = false) ExpenseStatus expenseStatus,
@@ -65,8 +72,10 @@ public class ExpenseResource {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExpenseResponse> update(@PathVariable Long id, @RequestBody @Valid UpdateExpenseRequest updateExpenseRequest) {
-        Expense expense = service.update(id, expenseMapper.toExpense(updateExpenseRequest));
+    public ResponseEntity<ExpenseResponse> update(@PathVariable Long id,
+                                                  @RequestHeader String changeAgent,
+                                                  @RequestBody @Valid UpdateExpenseRequest updateExpenseRequest) {
+        Expense expense = service.update(id, changeAgent, expenseMapper.toExpense(updateExpenseRequest));
         return ResponseEntity.ok(expenseMapper.toExpenseResponse(expense));
     }
 
@@ -79,6 +88,13 @@ public class ExpenseResource {
     public ResponseEntity<Void> deleteById(@PathVariable final Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<ExpenseHistoryResponse> findAllHistory() {
+        List<ExpenseHistory> expenseHistory = expenseHistoryService.findAll();
+
+        return ResponseEntity.ok(expenseHistoryMapper.toExpenseHistoryResponse());
     }
 
 }
