@@ -66,6 +66,15 @@ public class Expense {
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
+    public Expense(Expense expense) {
+        this.id = expense.getId();
+        this.name = expense.getName();
+        this.status = expense.getStatus();
+        this.type = expense.getType();
+        this.paymentType = expense.getPaymentType();
+        this.installments = expense.getInstallments();
+    }
+
     public void setStatusToPending() {
         this.status = ExpenseStatus.PENDING;
     }
