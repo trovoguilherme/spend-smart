@@ -90,11 +90,16 @@ public class ExpenseResource {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/history")
-    public ResponseEntity<ExpenseHistoryResponse> findAllHistory() {
-        List<ExpenseHistory> expenseHistory = expenseHistoryService.findAll();
+    @GetMapping("/{name}/history")
+    public ResponseEntity<ExpenseHistoryResponse> findHistoryByName(@PathVariable String name) {
+        List<ExpenseHistory> expenseHistory = expenseHistoryService.findByName(name);
 
-        return ResponseEntity.ok(expenseHistoryMapper.toExpenseHistoryResponse());
+        return ResponseEntity.ok(new ExpenseHistoryResponse());
+    }
+
+    @GetMapping("/histories")
+    public ResponseEntity<List<ExpenseHistory>> findAllHistory() {
+        return ResponseEntity.ok(expenseHistoryService.findAll());
     }
 
 }

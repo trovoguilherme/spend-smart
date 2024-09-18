@@ -3,19 +3,16 @@ package br.com.skeleton.spendsmart.resource.response;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 public class ExpenseHistoryResponse {
 
     private Long expenseId;
 
-    private String operation;
+    private String name;
 
-    List<ExpenseHistoryDetailResponse> expenseHistoryDetailResponses;
+    private ExpenseHistoryOperationResponse expenseHistoryOperationResponse;
 
-    private LocalDateTime createdAt;
+    private String changeAgent;
 
 }
