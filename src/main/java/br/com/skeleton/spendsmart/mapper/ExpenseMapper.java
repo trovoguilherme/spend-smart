@@ -14,8 +14,11 @@ import org.mapstruct.ReportingPolicy;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ExpenseMapper {
@@ -35,12 +38,19 @@ public interface ExpenseMapper {
 
         if (expenseRequest.getInstallment() != null) {
             List<Installment> installments = new ArrayList<>();
+            LocalDateTime dueDate = expenseRequest.getInstallment().getDueDay().atTime(LocalTime.MAX);
 
-            for (int i = 0; i < expenseRequest.getInstallment().getNumber(); i++) {
-                installments.add(Installment.builder()
-                        .value(expenseRequest.getValue().divide(BigDecimal.valueOf(expenseRequest.getInstallment().getNumber()), 2, RoundingMode.HALF_UP))
-                        .paid(false).build());
-            }
+            IntStream.range(0, expenseRequest.getInstallment().getNumber())
+                    .forEach(i -> {
+                        installments.add(
+                                Installment.builder()
+                                        .value(expenseRequest.getValue().divide(BigDecimal.valueOf(expenseRequest.getInstallment().getNumber()), 2, RoundingMode.HALF_UP))
+                                        .paid(false)
+                                        .dueDate(dueDate.plusMonths(i))
+                                        .build()
+                        );
+                    });
+
             return installments;
         }
 
