@@ -45,6 +45,10 @@ public class ExpenseHistoryService {
 
     }
 
+    public List<ExpenseHistory> findByName(final String name) {
+        return repository.findAllByExpense_Name(name);
+    }
+
     public List<ExpenseHistory> findAll() {
         return repository.findAll();
     }
