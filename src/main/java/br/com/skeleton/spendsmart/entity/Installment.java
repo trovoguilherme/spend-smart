@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -39,6 +40,9 @@ public class Installment {
 
     @Column(name = "IS_PAID")
     private Boolean paid;
+
+    @Column(name = "DUE_DATE")
+    private LocalDateTime dueDate;
 
     public void pay() {
         paid = true;
