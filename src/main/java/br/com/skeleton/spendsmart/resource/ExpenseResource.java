@@ -28,9 +28,7 @@ import java.util.List;
 public class ExpenseResource {
 
     private final ExpenseMapper expenseMapper;
-    private final ExpenseHistoryMapper expenseHistoryMapper;
     private final ExpenseService service;
-    private final ExpenseHistoryService expenseHistoryService;
 
     @GetMapping
     public ResponseEntity<List<ExpenseResponse>> findAll(@RequestParam(required = false) ExpenseStatus expenseStatus,
