@@ -1,7 +1,6 @@
 package br.com.skeleton.spendsmart.resource;
 
 import br.com.skeleton.spendsmart.entity.Expense;
-import br.com.skeleton.spendsmart.entity.ExpenseHistory;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import br.com.skeleton.spendsmart.entity.enums.PaymentType;
@@ -10,7 +9,6 @@ import br.com.skeleton.spendsmart.mapper.ExpenseMapper;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
 import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
-import br.com.skeleton.spendsmart.resource.response.ExpenseHistoryResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
 import br.com.skeleton.spendsmart.service.ExpenseHistoryService;
 import br.com.skeleton.spendsmart.service.ExpenseService;
@@ -18,17 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -88,18 +76,6 @@ public class ExpenseResource {
     public ResponseEntity<Void> deleteById(@PathVariable final Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{name}/history")
-    public ResponseEntity<ExpenseHistoryResponse> findHistoryByName(@PathVariable String name) {
-        List<ExpenseHistory> expenseHistory = expenseHistoryService.findByName(name);
-
-        return ResponseEntity.ok(new ExpenseHistoryResponse());
-    }
-
-    @GetMapping("/histories")
-    public ResponseEntity<List<ExpenseHistory>> findAllHistory() {
-        return ResponseEntity.ok(expenseHistoryService.findAll());
     }
 
 }
