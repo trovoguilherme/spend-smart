@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class InstallmentDetailResponse {
 
+    private BigDecimal value;
+
     private Long amountPaid;
 
     private Long amountUnpaid;

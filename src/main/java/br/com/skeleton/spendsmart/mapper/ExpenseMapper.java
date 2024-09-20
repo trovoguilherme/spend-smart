@@ -63,6 +63,7 @@ public interface ExpenseMapper {
             return null;
         }
         return InstallmentDetailResponse.builder()
+                .value(source.getInstallments().getFirst().getValue())
                 .amountPaid(source.getPaidInstallmentsCount())
                 .amountUnpaid(source.getUnpaidInstallmentsCount())
                 .totalPaid(source.getTotalPaidAmount())
