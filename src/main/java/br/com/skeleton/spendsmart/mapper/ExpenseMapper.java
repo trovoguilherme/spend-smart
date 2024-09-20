@@ -6,6 +6,7 @@ import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
 import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
+import br.com.skeleton.spendsmart.resource.response.ExpenseSummaryResponse;
 import br.com.skeleton.spendsmart.resource.response.InstallmentDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -32,6 +33,25 @@ public interface ExpenseMapper {
 
     @Mapping(target = "installmentDetailResponse", source = "source", qualifiedByName = "mapInstallmentDetailResponse")
     ExpenseDetailResponse toExpenseDetailResponse(Expense source);
+
+    default ExpenseSummaryResponse toExpenseSummaryResponse(List<Expense> source) {
+        List<ExpenseDetailResponse> expenseDetailResponseList = source.stream().map(this::toExpenseDetailResponse).toList();
+
+        BigDecimal totalUnpaid = expenseDetailResponseList.stream()
+                .map(expenseDetailResponse -> {
+                    InstallmentDetailResponse installmentDetailResponse = expenseDetailResponse.getInstallmentDetailResponse();
+                    if (installmentDetailResponse != null) {
+                        return installmentDetailResponse.getTotalUnpaid();
+                    } else {
+                        return expenseDetailResponse.getValue();
+                    }
+                }).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return ExpenseSummaryResponse.builder()
+                .totalUnpaid(totalUnpaid)
+                .expenseDetailResponseList(expenseDetailResponseList)
+                .build();
+    }
 
     @Named("mapInstallments")
     default List<Installment> mapInstallments(ExpenseRequest expenseRequest) {

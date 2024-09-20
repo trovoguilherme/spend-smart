@@ -17,7 +17,7 @@ public class ExpenseDetailResponse {
 
     private String name;
 
-    private Double value;
+    private BigDecimal value;
 
     private InstallmentDetailResponse installmentDetailResponse;
 

@@ -4,13 +4,11 @@ import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import br.com.skeleton.spendsmart.entity.enums.PaymentType;
-import br.com.skeleton.spendsmart.mapper.ExpenseHistoryMapper;
 import br.com.skeleton.spendsmart.mapper.ExpenseMapper;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
-import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
-import br.com.skeleton.spendsmart.service.ExpenseHistoryService;
+import br.com.skeleton.spendsmart.resource.response.ExpenseSummaryResponse;
 import br.com.skeleton.spendsmart.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +37,10 @@ public class ExpenseResource {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<List<ExpenseDetailResponse>> findAllDetails(@RequestParam(required = false) ExpenseStatus expenseStatus,
-                                                                      @RequestParam(required = false) ExpenseType expenseType,
-                                                                      @RequestParam(required = false) PaymentType paymentType) {
-        return ResponseEntity.ok(service.findAll(expenseStatus, expenseType, paymentType).stream()
-                .map(expenseMapper::toExpenseDetailResponse).toList());
+    public ResponseEntity<ExpenseSummaryResponse> findAllDetails(@RequestParam(required = false) ExpenseStatus expenseStatus,
+                                                                       @RequestParam(required = false) ExpenseType expenseType,
+                                                                       @RequestParam(required = false) PaymentType paymentType) {
+        return ResponseEntity.ok(expenseMapper.toExpenseSummaryResponse(service.findAll(expenseStatus, expenseType, paymentType)));
     }
 
     @GetMapping("/{name}")
