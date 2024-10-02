@@ -68,6 +68,7 @@ public interface ExpenseMapper {
                                         .value(expenseRequest.getValue().divide(BigDecimal.valueOf(expenseRequest.getInstallment().getNumber()), 2, RoundingMode.HALF_UP))
                                         .paid(false)
                                         .dueDate(dueDate.plusMonths(i))
+                                        .dayOfPayment(null)
                                         .build()
                         );
                     });

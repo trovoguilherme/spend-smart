@@ -44,6 +44,9 @@ public class Installment {
     @Column(name = "DUE_DATE")
     private LocalDateTime dueDate;
 
+    @Column(name = "DAY_OF_PAYMENT")
+    private LocalDateTime dayOfPayment;
+
     public void pay() {
         paid = true;
     }
