@@ -49,6 +49,13 @@ public class RestExceptionHandler {
                 .build());
     }
 
+    @ExceptionHandler({InstallmentAllPaidException.class})
+    public ResponseEntity<ResponseException> installmentAllPaidException(InstallmentAllPaidException exception) {
+        return ResponseEntity.badRequest().body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
+    }
+
     @ExceptionHandler({ValidationException.class})
     public ResponseEntity<ResponseException> validationException(ValidationException exception) {
         return ResponseEntity.badRequest().body(ResponseException.builder()
