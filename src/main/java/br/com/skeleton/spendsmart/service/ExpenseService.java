@@ -23,22 +23,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseService {
 
-    private final ExpenseRepository repository;
+    private final ExpenseRepository expenseRepository;
     private final InstallmentService installmentService;
     private final ExpenseHistoryService expenseHistoryService;
     private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
 
     public List<Expense> findAll(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
-        return repository.findAllByFilter(getUsername(), expenseStatus, expenseType, paymentType);
+        return expenseRepository.findAllByFilter(getUsername(), expenseStatus, expenseType, paymentType);
     }
 
     public Expense findByName(String name) {
-        return repository.findByNameAndUserUsername(name, getUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
+        return expenseRepository.findByNameAndUserUsername(name, getUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
     }
 
     public Expense findByIdAndUserUsername(final Long id) {
-        return repository.findByIdAndUserUsername(id, getUsername()).orElseThrow(() -> new NotFoundException("Id not found"));
+        return expenseRepository.findByIdAndUserUsername(id, getUsername()).orElseThrow(() -> new NotFoundException("Id not found"));
     }
 
     @Transactional
@@ -49,7 +49,7 @@ public class ExpenseService {
 
         expense.setStatusToPending();
 
-        Expense expenseSaved = repository.save(expense);
+        Expense expenseSaved = expenseRepository.save(expense);
 
         if (expense.getInstallments() != null) {
             expense.getInstallments().forEach(installment -> installment.setExpense(expense));
@@ -77,40 +77,20 @@ public class ExpenseService {
 
         expenseHistoryService.save(expenseOld, expenseFound, changeAgent);
 
-        return repository.save(expenseFound);
+        return expenseRepository.save(expenseFound);
     }
 
     public Expense pay(Long id) {
         Expense expense = findByIdAndUserUsername(id);
 
-        if (ExpenseStatus.PAID.equals(expense.getStatus())) {
-            //TODO retornar como 400 para o usuário
-            throw new InstallmentAllPaidException();
-        }
+        validateIfAlreadyPaid(expense);
 
         if (!expense.getInstallments().isEmpty()) {
-            List<Installment> installments = installmentService.pay(expense.getInstallments());
-            expense.setInstallments(installments);
-
-            boolean allPaid = installments.stream().allMatch(Installment::getPaid);
-
-            if (allPaid) {
-                expense.setStatusToPaid();
-                repository.save(expense);
-            }
-
-            return expense;
+            handleInstallmentPayments(expense);
         } else {
             expense.setStatusToPaid();
-
-            return expense;
         }
-    }
-
-    private void existsByName(String name) {
-        if (repository.existsByName(name)) {
-            throw new BusinessException("Expense name already exists");
-        }
+        return expenseRepository.save(expense);
     }
 
     @Transactional
@@ -120,8 +100,27 @@ public class ExpenseService {
         if (!expense.getInstallments().isEmpty()) {
             installmentService.deleteByExpense(expense);
         }
+        expenseRepository.deleteById(id);
+    }
 
-        repository.deleteById(id);
+    private void validateIfAlreadyPaid(Expense expense) {
+        if (ExpenseStatus.PAID.equals(expense.getStatus())) {
+            throw new InstallmentAllPaidException();
+        }
+    }
+
+    private void handleInstallmentPayments(Expense expense) {
+        installmentService.pay(expense.getInstallments());
+
+        if (installmentService.allInstallmentsPaid(expense.getInstallments())) {
+            expense.setStatusToPaid();
+        }
+    }
+
+    private void existsByName(String name) {
+        if (expenseRepository.existsByName(name)) {
+            throw new BusinessException("Expense name already exists");
+        }
     }
 
     private String getUsername() {
