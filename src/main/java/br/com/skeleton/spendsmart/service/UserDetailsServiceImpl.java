@@ -1,7 +1,7 @@
 package br.com.skeleton.spendsmart.service;
 
-import br.com.skeleton.spendsmart.security.UserAuthenticated;
 import br.com.skeleton.spendsmart.repository.UserRepository;
+import br.com.skeleton.spendsmart.security.UserAuthenticated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
