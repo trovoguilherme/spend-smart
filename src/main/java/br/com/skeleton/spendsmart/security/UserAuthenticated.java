@@ -1,6 +1,7 @@
 package br.com.skeleton.spendsmart.security;
 
 import br.com.skeleton.spendsmart.entity.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserAuthenticated implements UserDetails {
 
+    @Getter
     private final User user;
 
     @Override
