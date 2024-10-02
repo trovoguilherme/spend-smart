@@ -9,6 +9,8 @@ import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +23,16 @@ public class ExpenseService {
     private final ExpenseRepository repository;
     private final InstallmentService installmentService;
     private final ExpenseHistoryService expenseHistoryService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     public List<Expense> findAll(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
         return repository.findAllByFilter(expenseStatus, expenseType, paymentType);
     }
 
-    public Expense findByName(String name) {
+    public Expense findByName(String name, Authentication authentication) {
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+
         return repository.findByName(name).orElseThrow(() -> new NotFoundException("Name not found"));
     }
 
