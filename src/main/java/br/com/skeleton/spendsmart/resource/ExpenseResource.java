@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -54,8 +55,8 @@ public class ExpenseResource {
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<ExpenseResponse> findByName(@PathVariable String name) {
-        return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.findByName(name)));
+    public ResponseEntity<ExpenseResponse> findByName(@PathVariable String name, Authentication authentication) {
+        return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.findByName(name, authentication)));
     }
 
     @PostMapping
