@@ -14,7 +14,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,7 +39,7 @@ public class ExpenseResource {
     private final ExpenseService service;
 
     @GetMapping
-    public ResponseEntity<List<ExpenseResponse>> findAll(@RequestParam(required = false) ExpenseStatus expenseStatus,
+    public ResponseEntity<List<ExpenseResponse>> findAll(@RequestParam(required = false, defaultValue = "PENDING") ExpenseStatus expenseStatus,
                                                          @RequestParam(required = false) ExpenseType expenseType,
                                                          @RequestParam(required = false) PaymentType paymentType) {
         return ResponseEntity.ok(service.findAll(expenseStatus, expenseType, paymentType)
@@ -48,19 +47,21 @@ public class ExpenseResource {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<ExpenseSummaryResponse> findAllDetails(@RequestParam(required = false) ExpenseStatus expenseStatus,
-                                                                       @RequestParam(required = false) ExpenseType expenseType,
-                                                                       @RequestParam(required = false) PaymentType paymentType) {
+    public ResponseEntity<ExpenseSummaryResponse> findAllDetails(@RequestParam(required = false, defaultValue = "PENDING") ExpenseStatus expenseStatus,
+                                                                 @RequestParam(required = false) ExpenseType expenseType,
+                                                                 @RequestParam(required = false) PaymentType paymentType) {
         return ResponseEntity.ok(expenseMapper.toExpenseSummaryResponse(service.findAll(expenseStatus, expenseType, paymentType)));
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<ExpenseResponse> findByName(@PathVariable String name, Authentication authentication) {
-        return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.findByName(name, authentication)));
+    public ResponseEntity<ExpenseResponse> findByName(@PathVariable String name) {
+        return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.findByName(name)));
     }
 
     @PostMapping
     public ResponseEntity<ExpenseResponse> save(@RequestBody @Valid ExpenseRequest expenseRequest) {
+
+        //TODO Mudar o Uri do retorno
         Expense expense = service.save(expenseMapper.toExpense(expenseRequest));
         return ResponseEntity.created(URI.create("/" + expense.getId())).body(expenseMapper.toExpenseResponse(expense));
     }
