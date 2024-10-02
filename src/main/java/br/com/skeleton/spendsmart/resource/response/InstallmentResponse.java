@@ -1,6 +1,5 @@
 package br.com.skeleton.spendsmart.resource.response;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.math.BigDecimal;
