@@ -1,5 +1,6 @@
-package br.com.skeleton.spendsmart.entity;
+package br.com.skeleton.spendsmart.security;
 
+import br.com.skeleton.spendsmart.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
