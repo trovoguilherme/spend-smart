@@ -54,7 +54,7 @@ public class Expense {
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
-    private ExpenseStatus status;
+    private ExpenseStatus status = ExpenseStatus.PENDING;
 
     @Column(name = "TYPE")
     @Enumerated(EnumType.STRING)

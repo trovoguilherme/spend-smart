@@ -29,6 +29,7 @@ public interface ExpenseMapper {
 
     Expense toExpense(UpdateExpenseRequest source);
 
+    @Mapping(target = "username", source = "source.user.username")
     ExpenseResponse toExpenseResponse(Expense source);
 
     @Mapping(target = "installmentDetailResponse", source = "source", qualifiedByName = "mapInstallmentDetailResponse")
