@@ -16,26 +16,19 @@ public class InstallmentService {
 
     private final InstallmentRepository repository;
 
-    public List<Installment> findAll() {
-        return repository.findAll();
-    }
-
     public List<Installment> saveAll(List<Installment> installments) {
         return repository.saveAll(installments);
     }
 
     public List<Installment> pay(List<Installment> installments) {
-        Installment unpaidInstallment = installments.stream().filter(installment -> !installment.getPaid())
-                .min(Comparator.comparingLong(Installment::getId)).orElseThrow(NoUnpaidInstallmentException::new);
+        Installment unpaidInstallment = installments.stream()
+                .filter(installment -> !installment.getPaid())
+                .min(Comparator.comparingLong(Installment::getId))
+                .orElseThrow(NoUnpaidInstallmentException::new);
 
         unpaidInstallment.pay();
+
         repository.save(unpaidInstallment);
-
-        boolean allPaid = installments.stream().allMatch(Installment::getPaid);
-
-        if (allPaid) {
-            //TODO Salvar no histórico
-        }
 
         return installments;
     }
