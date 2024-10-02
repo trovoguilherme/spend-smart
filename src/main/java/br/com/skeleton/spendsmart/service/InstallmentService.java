@@ -7,6 +7,7 @@ import br.com.skeleton.spendsmart.repository.InstallmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,10 +28,15 @@ public class InstallmentService {
                 .orElseThrow(NoUnpaidInstallmentException::new);
 
         unpaidInstallment.pay();
+        unpaidInstallment.setDayOfPayment(LocalDateTime.now());
 
         repository.save(unpaidInstallment);
 
         return installments;
+    }
+
+    public boolean allInstallmentsPaid(List<Installment> installments) {
+        return installments.stream().allMatch(Installment::getPaid);
     }
 
     public void deleteByExpense(Expense expense) {
