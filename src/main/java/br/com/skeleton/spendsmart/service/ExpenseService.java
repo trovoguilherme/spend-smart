@@ -1,7 +1,7 @@
 package br.com.skeleton.spendsmart.service;
 
 import br.com.skeleton.spendsmart.entity.Expense;
-import br.com.skeleton.spendsmart.entity.Installment;
+import br.com.skeleton.spendsmart.entity.User;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import br.com.skeleton.spendsmart.entity.enums.PaymentType;
@@ -9,11 +9,9 @@ import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.InstallmentAllPaidException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
-import br.com.skeleton.spendsmart.repository.UserRepository;
 import br.com.skeleton.spendsmart.security.UserAuthenticated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,27 +25,27 @@ public class ExpenseService {
     private final InstallmentService installmentService;
     private final ExpenseHistoryService expenseHistoryService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final UserRepository userRepository;
 
     public List<Expense> findAll(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
-        return expenseRepository.findAllByFilter(getUsername(), expenseStatus, expenseType, paymentType);
+        return expenseRepository.findAllByFilter(getActualUsername(), expenseStatus, expenseType, paymentType);
     }
 
     public Expense findByName(String name) {
-        return expenseRepository.findByNameAndUserUsername(name, getUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
+        return expenseRepository.findByNameAndUserUsername(name, getActualUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
     }
 
     public Expense findByIdAndUserUsername(final Long id) {
-        return expenseRepository.findByIdAndUserUsername(id, getUsername()).orElseThrow(() -> new NotFoundException("Id not found"));
+        return expenseRepository.findByIdAndUserUsername(id, getActualUsername()).orElseThrow(() -> new NotFoundException("Id not found"));
     }
 
     @Transactional
     public Expense save(Expense expense) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername());
+        User user = ((UserAuthenticated) userDetailsService.loadUserByUsername(getActualUsername())).getUser();
 
         existsByName(expense.getName());
 
         expense.setStatusToPending();
+        expense.setUser(user);
 
         Expense expenseSaved = expenseRepository.save(expense);
 
@@ -55,12 +53,6 @@ public class ExpenseService {
             expense.getInstallments().forEach(installment -> installment.setExpense(expense));
             installmentService.saveAll(expense.getInstallments());
         }
-
-        if (userDetails instanceof UserAuthenticated user) {
-            user.getUser().getExpenses().add(expenseSaved);
-            expense.setUser(userRepository.save(user.getUser()));
-        }
-
         return expenseSaved;
     }
 
@@ -123,7 +115,7 @@ public class ExpenseService {
         }
     }
 
-    private String getUsername() {
+    private String getActualUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
