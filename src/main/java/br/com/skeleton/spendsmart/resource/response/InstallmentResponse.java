@@ -1,5 +1,6 @@
 package br.com.skeleton.spendsmart.resource.response;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,5 +14,7 @@ public class InstallmentResponse {
     private Boolean paid;
 
     private LocalDateTime dueDate;
+
+    private LocalDateTime dayOfPayment;
 
 }
