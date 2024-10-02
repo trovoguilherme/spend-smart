@@ -3,6 +3,7 @@ package br.com.skeleton.spendsmart.resource;
 import br.com.skeleton.spendsmart.entity.User;
 import br.com.skeleton.spendsmart.mapper.UserMapper;
 import br.com.skeleton.spendsmart.resource.request.UserRequest;
+import br.com.skeleton.spendsmart.resource.response.UserResponse;
 import br.com.skeleton.spendsmart.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class UserResource {
     private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseEntity<User> save(@RequestBody @Valid UserRequest userRequest) {
+    public ResponseEntity<UserResponse> save(@RequestBody @Valid UserRequest userRequest) {
 
         User user = userService.save(userMapper.toEntity(userRequest));
 
@@ -35,7 +36,7 @@ public class UserResource {
                 .buildAndExpand(user.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(user);
+        return ResponseEntity.created(location).body(userMapper.toResponse(user));
     }
 
 }
