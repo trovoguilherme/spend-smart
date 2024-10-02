@@ -42,6 +42,13 @@ public class RestExceptionHandler {
                 .build());
     }
 
+    @ExceptionHandler({UsernameAlreadyExistsException.class})
+    public ResponseEntity<ResponseException> usernameAlreadyExistsException(UsernameAlreadyExistsException exception) {
+        return ResponseEntity.badRequest().body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
+    }
+
     @ExceptionHandler({ValidationException.class})
     public ResponseEntity<ResponseException> validationException(ValidationException exception) {
         return ResponseEntity.badRequest().body(ResponseException.builder()
