@@ -6,10 +6,13 @@ import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import br.com.skeleton.spendsmart.entity.enums.PaymentType;
 import br.com.skeleton.spendsmart.exception.BusinessException;
+import br.com.skeleton.spendsmart.exception.InstallmentAllPaidException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
+import br.com.skeleton.spendsmart.repository.UserRepository;
+import br.com.skeleton.spendsmart.security.UserAuthenticated;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,24 +27,24 @@ public class ExpenseService {
     private final InstallmentService installmentService;
     private final ExpenseHistoryService expenseHistoryService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final UserRepository userRepository;
 
     public List<Expense> findAll(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
-        return repository.findAllByFilter(expenseStatus, expenseType, paymentType);
+        return repository.findAllByFilter(getUsername(), expenseStatus, expenseType, paymentType);
     }
 
-    public Expense findByName(String name, Authentication authentication) {
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
-
-        return repository.findByName(name).orElseThrow(() -> new NotFoundException("Name not found"));
+    public Expense findByName(String name) {
+        return repository.findByNameAndUserUsername(name, getUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
     }
 
-    public Expense findById(final Long id) {
-        return repository.findById(id).orElseThrow(() -> new NotFoundException("Id not found"));
+    public Expense findByIdAndUserUsername(final Long id) {
+        return repository.findByIdAndUserUsername(id, getUsername()).orElseThrow(() -> new NotFoundException("Id not found"));
     }
 
     @Transactional
     public Expense save(Expense expense) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername());
+
         existsByName(expense.getName());
 
         expense.setStatusToPending();
@@ -53,13 +56,18 @@ public class ExpenseService {
             installmentService.saveAll(expense.getInstallments());
         }
 
+        if (userDetails instanceof UserAuthenticated user) {
+            user.getUser().getExpenses().add(expenseSaved);
+            expense.setUser(userRepository.save(user.getUser()));
+        }
+
         return expenseSaved;
     }
 
     @Transactional
     public Expense update(Long id, String changeAgent, Expense expense) {
         existsByName(expense.getName());
-        Expense expenseFound = findById(id);
+        Expense expenseFound = findByIdAndUserUsername(id);
 
         Expense expenseOld = new Expense(expenseFound);
 
@@ -73,7 +81,12 @@ public class ExpenseService {
     }
 
     public Expense pay(Long id) {
-        Expense expense = findById(id);
+        Expense expense = findByIdAndUserUsername(id);
+
+        if (ExpenseStatus.PAID.equals(expense.getStatus())) {
+            //TODO retornar como 400 para o usuário
+            throw new InstallmentAllPaidException();
+        }
 
         if (!expense.getInstallments().isEmpty()) {
             List<Installment> installments = installmentService.pay(expense.getInstallments());
@@ -88,7 +101,8 @@ public class ExpenseService {
 
             return expense;
         } else {
-            //TODO Salvar no histórico
+            expense.setStatusToPaid();
+
             return expense;
         }
     }
@@ -101,13 +115,17 @@ public class ExpenseService {
 
     @Transactional
     public void deleteById(Long id) {
-        Expense expense = findById(id);
+        Expense expense = findByIdAndUserUsername(id);
 
         if (!expense.getInstallments().isEmpty()) {
             installmentService.deleteByExpense(expense);
         }
 
         repository.deleteById(id);
+    }
+
+    private String getUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
 }

@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface CustomExpenseRepository {
 
-    List<Expense> findAllByFilter(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType);
+    List<Expense> findAllByFilter(String username, ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType);
 
 }
