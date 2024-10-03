@@ -23,6 +23,7 @@ public class UserService {
             throw new UsernameAlreadyExistsException();
         }
 
+        user.getWallet().setUser(user);
         return userRepository.save(user);
     }
 
