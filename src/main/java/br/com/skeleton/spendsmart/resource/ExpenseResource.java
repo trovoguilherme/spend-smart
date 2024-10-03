@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -60,10 +61,14 @@ public class ExpenseResource {
 
     @PostMapping
     public ResponseEntity<ExpenseResponse> save(@RequestBody @Valid ExpenseRequest expenseRequest) {
-
-        //TODO Mudar o Uri do retorno
         Expense expense = service.save(expenseMapper.toExpense(expenseRequest));
-        return ResponseEntity.created(URI.create("/" + expense.getId())).body(expenseMapper.toExpenseResponse(expense));
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(expense.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(expenseMapper.toExpenseResponse(expense));
     }
 
     @PutMapping("/{id}")
