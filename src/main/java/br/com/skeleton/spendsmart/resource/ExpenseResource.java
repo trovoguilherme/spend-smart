@@ -39,7 +39,7 @@ public class ExpenseResource {
     private final ExpenseService service;
 
     @GetMapping
-    public ResponseEntity<List<ExpenseResponse>> findAll(@RequestParam(required = false) ExpenseStatus expenseStatus,
+    public ResponseEntity<List<ExpenseResponse>> findAll(@RequestParam(required = false, defaultValue = "PENDING") ExpenseStatus expenseStatus,
                                                          @RequestParam(required = false) ExpenseType expenseType,
                                                          @RequestParam(required = false) PaymentType paymentType) {
         return ResponseEntity.ok(service.findAll(expenseStatus, expenseType, paymentType)
@@ -47,9 +47,9 @@ public class ExpenseResource {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<ExpenseSummaryResponse> findAllDetails(@RequestParam(required = false) ExpenseStatus expenseStatus,
-                                                                       @RequestParam(required = false) ExpenseType expenseType,
-                                                                       @RequestParam(required = false) PaymentType paymentType) {
+    public ResponseEntity<ExpenseSummaryResponse> findAllDetails(@RequestParam(required = false, defaultValue = "PENDING") ExpenseStatus expenseStatus,
+                                                                 @RequestParam(required = false) ExpenseType expenseType,
+                                                                 @RequestParam(required = false) PaymentType paymentType) {
         return ResponseEntity.ok(expenseMapper.toExpenseSummaryResponse(service.findAll(expenseStatus, expenseType, paymentType)));
     }
 
@@ -60,6 +60,8 @@ public class ExpenseResource {
 
     @PostMapping
     public ResponseEntity<ExpenseResponse> save(@RequestBody @Valid ExpenseRequest expenseRequest) {
+
+        //TODO Mudar o Uri do retorno
         Expense expense = service.save(expenseMapper.toExpense(expenseRequest));
         return ResponseEntity.created(URI.create("/" + expense.getId())).body(expenseMapper.toExpenseResponse(expense));
     }

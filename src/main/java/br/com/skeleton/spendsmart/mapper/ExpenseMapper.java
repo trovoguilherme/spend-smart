@@ -29,6 +29,7 @@ public interface ExpenseMapper {
 
     Expense toExpense(UpdateExpenseRequest source);
 
+    @Mapping(target = "username", source = "source.user.username")
     ExpenseResponse toExpenseResponse(Expense source);
 
     @Mapping(target = "installmentDetailResponse", source = "source", qualifiedByName = "mapInstallmentDetailResponse")
@@ -67,6 +68,7 @@ public interface ExpenseMapper {
                                         .value(expenseRequest.getValue().divide(BigDecimal.valueOf(expenseRequest.getInstallment().getNumber()), 2, RoundingMode.HALF_UP))
                                         .paid(false)
                                         .dueDate(dueDate.plusMonths(i))
+                                        .dayOfPayment(null)
                                         .build()
                         );
                     });
@@ -83,7 +85,7 @@ public interface ExpenseMapper {
             return null;
         }
         return InstallmentDetailResponse.builder()
-                .value(source.getInstallments().getFirst().getValue())
+                .value(source.getInstallments().get(0).getValue())
                 .amountPaid(source.getPaidInstallmentsCount())
                 .amountUnpaid(source.getUnpaidInstallmentsCount())
                 .totalPaid(source.getTotalPaidAmount())

@@ -9,6 +9,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExpenseResponse {
 
+    private String username;
+
     private String name;
 
     private String value;

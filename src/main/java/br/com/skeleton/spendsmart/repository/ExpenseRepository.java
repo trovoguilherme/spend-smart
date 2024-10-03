@@ -9,7 +9,9 @@ import java.util.Optional;
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long>, CustomExpenseRepository {
 
-    Optional<Expense> findByName(String name);
+    Optional<Expense> findByNameAndUserUsername(String name, String username);
+
+    Optional<Expense> findByIdAndUserUsername(Long id, String username);
 
     boolean existsByName(String name);
 

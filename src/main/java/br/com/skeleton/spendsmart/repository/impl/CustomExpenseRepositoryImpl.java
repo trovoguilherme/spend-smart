@@ -5,6 +5,7 @@ import br.com.skeleton.spendsmart.entity.enums.ExpenseStatus;
 import br.com.skeleton.spendsmart.entity.enums.ExpenseType;
 import br.com.skeleton.spendsmart.entity.enums.PaymentType;
 import br.com.skeleton.spendsmart.repository.CustomExpenseRepository;
+import br.com.skeleton.spendsmart.service.UserDetailsServiceImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,17 @@ import java.util.Map;
 public class CustomExpenseRepositoryImpl implements CustomExpenseRepository {
 
     private final EntityManager entityManager;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
-    public List<Expense> findAllByFilter(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
+    public List<Expense> findAllByFilter(String username, ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
         StringBuilder jpql = new StringBuilder("SELECT e FROM Expense e");
 
         List<String> whereCause = new ArrayList<>();
         Map<String, Object> parameters = new HashMap<>();
+
+        whereCause.add(" e.user.username = :username");
+        parameters.put("username", username);
 
         if (expenseStatus != null) {
             whereCause.add(" e.status = :status");

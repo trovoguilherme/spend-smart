@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.StringJoiner;
@@ -37,6 +36,20 @@ public class RestExceptionHandler {
 
     @ExceptionHandler({BusinessException.class})
     public ResponseEntity<ResponseException> businessException(BusinessException exception) {
+        return ResponseEntity.badRequest().body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler({UsernameAlreadyExistsException.class})
+    public ResponseEntity<ResponseException> usernameAlreadyExistsException(UsernameAlreadyExistsException exception) {
+        return ResponseEntity.badRequest().body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler({InstallmentAllPaidException.class})
+    public ResponseEntity<ResponseException> installmentAllPaidException(InstallmentAllPaidException exception) {
         return ResponseEntity.badRequest().body(ResponseException.builder()
                 .exceptionMessage(exception.getMessage())
                 .build());

@@ -7,6 +7,7 @@ import br.com.skeleton.spendsmart.repository.InstallmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,28 +17,26 @@ public class InstallmentService {
 
     private final InstallmentRepository repository;
 
-    public List<Installment> findAll() {
-        return repository.findAll();
-    }
-
     public List<Installment> saveAll(List<Installment> installments) {
         return repository.saveAll(installments);
     }
 
     public List<Installment> pay(List<Installment> installments) {
-        Installment unpaidInstallment = installments.stream().filter(installment -> !installment.getPaid())
-                .min(Comparator.comparingLong(Installment::getId)).orElseThrow(NoUnpaidInstallmentException::new);
+        Installment unpaidInstallment = installments.stream()
+                .filter(installment -> !installment.getPaid())
+                .min(Comparator.comparingLong(Installment::getId))
+                .orElseThrow(NoUnpaidInstallmentException::new);
 
         unpaidInstallment.pay();
+        unpaidInstallment.setDayOfPayment(LocalDateTime.now());
+
         repository.save(unpaidInstallment);
 
-        boolean allPaid = installments.stream().allMatch(Installment::getPaid);
-
-        if (allPaid) {
-            //TODO Salvar no histórico
-        }
-
         return installments;
+    }
+
+    public boolean allInstallmentsPaid(List<Installment> installments) {
+        return installments.stream().allMatch(Installment::getPaid);
     }
 
     public void deleteByExpense(Expense expense) {

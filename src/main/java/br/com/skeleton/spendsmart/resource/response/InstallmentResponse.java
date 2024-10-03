@@ -14,4 +14,6 @@ public class InstallmentResponse {
 
     private LocalDateTime dueDate;
 
+    private LocalDateTime dayOfPayment;
+
 }
