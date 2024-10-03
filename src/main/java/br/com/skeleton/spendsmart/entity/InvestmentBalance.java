@@ -1,5 +1,6 @@
 package br.com.skeleton.spendsmart.entity;
 
+import br.com.skeleton.spendsmart.entity.enums.Bank;
 import br.com.skeleton.spendsmart.entity.enums.InvestmentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +39,10 @@ public class InvestmentBalance {
     @Enumerated(EnumType.STRING)
     @Column(name = "INVESTMENT_TYPE")
     private InvestmentType investmentType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "BANK_TYPE")
+    private Bank bankType;
 
     @Column(name = "YIELD")
     private Double yield;
