@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "INVESTMENT_BALANCE")
-public class InvestmentBalance {
+public class Investment {
 
     @Id
     @Column(name = "ID_INVESTMENT_BALANCE")
