@@ -14,7 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -33,12 +35,20 @@ public class Wallet {
     @Column(name = "BALANCE")
     private Double balance;
 
+    @UpdateTimestamp
+    @Column(name = "UPDATED_AT")
+    private LocalDateTime updatedAt;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_WALLET")
+    private List<BankAccount> bankAccounts;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_WALLET")
     private List<Investment> investments;
 
     @OneToOne
-    @JoinColumn(name = "ID_USER")
+    @JoinColumn(name = "ID_USER", nullable = false)
     private User user;
 
 }
