@@ -2,6 +2,7 @@ package br.com.skeleton.spendsmart.resource;
 
 import br.com.skeleton.spendsmart.entity.User;
 import br.com.skeleton.spendsmart.mapper.UserMapper;
+import br.com.skeleton.spendsmart.resource.request.UpdatePasswordRequest;
 import br.com.skeleton.spendsmart.resource.request.UserRequest;
 import br.com.skeleton.spendsmart.resource.response.UserResponse;
 import br.com.skeleton.spendsmart.service.UserService;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +39,12 @@ public class UserResource {
                 .toUri();
 
         return ResponseEntity.created(location).body(userMapper.toResponse(user));
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<UserResponse> updatePassword(@RequestBody @Valid UpdatePasswordRequest updatePasswordRequest) {
+        User user = userService.updatePassword(updatePasswordRequest);
+        return ResponseEntity.ok(userMapper.toResponse(user));
     }
 
 }
