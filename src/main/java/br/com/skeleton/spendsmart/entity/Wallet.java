@@ -39,8 +39,7 @@ public class Wallet {
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_WALLET")
+    @OneToMany(mappedBy = "wallet", fetch = FetchType.EAGER)
     private List<BankAccount> bankAccounts;
 
     @OneToMany(fetch = FetchType.LAZY)
