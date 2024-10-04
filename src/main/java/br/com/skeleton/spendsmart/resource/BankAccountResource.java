@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,10 +25,17 @@ public class BankAccountResource {
     private final BankAccountMapper bankAccountMapper;
 
     @PostMapping
-    public ResponseEntity<BankAccountResponse> save(@RequestBody @Valid BankAccountRequest bankAccountRequest) {
+    public ResponseEntity<BankAccountResponse> deposit(@RequestBody @Valid BankAccountRequest bankAccountRequest) {
         BankAccount bankAccountSave = bankAccountService.save(bankAccountMapper.toEntity(bankAccountRequest));
 
-        return ResponseEntity.ok(bankAccountMapper.toResponse(bankAccountSave));
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(bankAccountSave.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(bankAccountMapper.toResponse(bankAccountSave));
     }
+
+    //TODO Criar put para alterar o valor todo, Criar InvestmentResource, e na Wallet somar sempre todos os saldos dos BankAccounts
 
 }
