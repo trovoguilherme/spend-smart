@@ -8,6 +8,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,5 +42,15 @@ public class BankAccount {
     @UpdateTimestamp
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_WALLET")
+    private Wallet wallet;
+
+    public void deposit(Double balance) {
+        if (balance > 0) {
+            this.balance += balance;
+        }
+    }
 
 }
