@@ -34,6 +34,13 @@ public class RestExceptionHandler {
                 .build());
     }
 
+    @ExceptionHandler({InsufficientBalanceWithdrawException.class})
+    public ResponseEntity<ResponseException> insufficientBalanceWithdrawException(InsufficientBalanceWithdrawException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseException.builder()
+                .exceptionMessage(exception.getMessage())
+                .build());
+    }
+
     @ExceptionHandler({BusinessException.class})
     public ResponseEntity<ResponseException> businessException(BusinessException exception) {
         return ResponseEntity.badRequest().body(ResponseException.builder()
