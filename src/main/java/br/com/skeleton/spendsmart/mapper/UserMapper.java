@@ -3,6 +3,7 @@ package br.com.skeleton.spendsmart.mapper;
 import br.com.skeleton.spendsmart.entity.User;
 import br.com.skeleton.spendsmart.entity.Wallet;
 import br.com.skeleton.spendsmart.resource.request.UserRequest;
+import br.com.skeleton.spendsmart.resource.request.UserWalletResponse;
 import br.com.skeleton.spendsmart.resource.response.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,6 +19,9 @@ public interface UserMapper {
     User toEntity(UserRequest source);
 
     UserResponse toResponse(User source);
+
+    @Mapping(target = "totalBalance", source = "balance")
+    UserWalletResponse toResponse(Wallet source);
 
     @Named("mapBCryptPasswordEncoder")
     default String mapBCryptPasswordEncoder(String source) {
