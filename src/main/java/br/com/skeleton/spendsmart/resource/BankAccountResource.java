@@ -38,8 +38,6 @@ public class BankAccountResource {
         return ResponseEntity.created(location).body(bankAccountMapper.toResponse(bankAccountSave));
     }
 
-    //TODO Criar put para alterar o valor todo, Criar InvestmentResource, e na Wallet somar sempre todos os saldos dos BankAccounts
-
     @PutMapping("/deposit")
     public ResponseEntity<BankAccountResponse> updateBalance(@RequestBody @Valid UpdateBankAccount updateBankAccount) {
 
