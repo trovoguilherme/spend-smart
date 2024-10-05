@@ -2,6 +2,7 @@ package br.com.skeleton.spendsmart.mapper;
 
 import br.com.skeleton.spendsmart.entity.BankAccount;
 import br.com.skeleton.spendsmart.resource.request.BankAccountRequest;
+import br.com.skeleton.spendsmart.resource.request.UpdateBankAccount;
 import br.com.skeleton.spendsmart.resource.response.BankAccountResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -10,6 +11,8 @@ import org.mapstruct.ReportingPolicy;
 public interface BankAccountMapper {
 
     BankAccount toEntity(BankAccountRequest source);
+
+    BankAccount toEntity(UpdateBankAccount source);
 
     BankAccountResponse toResponse(BankAccount source);
 
