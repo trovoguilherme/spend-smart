@@ -36,7 +36,7 @@ public class BankAccount {
     private Double balance;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "BANK_TYPE")
+    @Column(name = "BANK_TYPE", unique = true)
     private Bank bankType;
 
     @UpdateTimestamp
