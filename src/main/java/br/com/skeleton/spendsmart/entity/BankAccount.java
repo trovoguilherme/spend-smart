@@ -53,4 +53,9 @@ public class BankAccount {
         }
     }
 
+    public void withdraw(Double amountToWithdraw) {
+        if (balance >= amountToWithdraw) {
+            this.balance -= amountToWithdraw;
+        }
+    }
 }
