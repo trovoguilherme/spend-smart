@@ -1,6 +1,7 @@
 package br.com.skeleton.spendsmart.service;
 
 import br.com.skeleton.spendsmart.entity.User;
+import br.com.skeleton.spendsmart.entity.Wallet;
 import br.com.skeleton.spendsmart.exception.PasswordNotMatchesException;
 import br.com.skeleton.spendsmart.exception.UsernameAlreadyExistsException;
 import br.com.skeleton.spendsmart.repository.UserRepository;
@@ -49,5 +50,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-
+    public Wallet getUserWallet() {
+        return findByUsername().getWallet();
+    }
 }
