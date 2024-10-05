@@ -4,6 +4,7 @@ import br.com.skeleton.spendsmart.entity.BankAccount;
 import br.com.skeleton.spendsmart.entity.Wallet;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.BankAccountRepository;
+import br.com.skeleton.spendsmart.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class BankAccountService {
 
     private final BankAccountRepository bankAccountRepository;
+    private final WalletRepository walletRepository;
     private final UserService userService;
 
     public BankAccount deposit(BankAccount bankAccount) {
@@ -31,18 +33,29 @@ public class BankAccountService {
     }
 
     private BankAccount depositBalanceExistingAccount(BankAccount existingAccount, Double depositAmount) {
+        Double previousBalance = existingAccount.getBalance();
         existingAccount.deposit(depositAmount);
+        updateWallet(existingAccount.getWallet(), previousBalance, existingAccount.getBalance());
         return bankAccountRepository.save(existingAccount);
     }
 
     private BankAccount createNewBankAccount(BankAccount bankAccount, Wallet wallet) {
         bankAccount.setWallet(wallet);
+        updateWallet(bankAccount.getWallet(), 0.0,bankAccount.getBalance());
         return bankAccountRepository.save(bankAccount);
     }
 
     private BankAccount updateExistingAccount(BankAccount existingAccount, Double newBalance) {
+        Double previousBalance = existingAccount.getBalance();
         existingAccount.setBalance(newBalance);
+        updateWallet(existingAccount.getWallet(), previousBalance, existingAccount.getBalance());
         return bankAccountRepository.save(existingAccount);
+    }
+
+    private void updateWallet(Wallet wallet, Double previousBalance, Double newBalance) {
+        Double balanceChange = newBalance - previousBalance;
+        wallet.setBalance(wallet.getBalance() + balanceChange);
+        walletRepository.save(wallet);
     }
 
 }
