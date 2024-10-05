@@ -26,7 +26,7 @@ public class BankAccountResource {
     private final BankAccountService bankAccountService;
     private final BankAccountMapper bankAccountMapper;
 
-    @PostMapping
+    @PostMapping("/deposit")
     public ResponseEntity<BankAccountResponse> deposit(@RequestBody @Valid BankAccountRequest bankAccountRequest) {
         BankAccount bankAccountSave = bankAccountService.deposit(bankAccountMapper.toEntity(bankAccountRequest));
 
@@ -40,12 +40,19 @@ public class BankAccountResource {
 
     //TODO Criar put para alterar o valor todo, Criar InvestmentResource, e na Wallet somar sempre todos os saldos dos BankAccounts
 
-    @PutMapping
+    @PutMapping("/deposit")
     public ResponseEntity<BankAccountResponse> updateBalance(@RequestBody @Valid UpdateBankAccount updateBankAccount) {
 
         BankAccount bankAccountSave = bankAccountService.updateBalance(bankAccountMapper.toEntity(updateBankAccount));
 
         return ResponseEntity.ok(bankAccountMapper.toResponse(bankAccountSave));
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<BankAccountResponse> withdraw(@RequestBody @Valid BankAccountRequest bankAccountRequest) {
+        BankAccount bankAccountSave = bankAccountService.withdraw(bankAccountMapper.toEntity(bankAccountRequest));
+
+        return ResponseEntity.ok().body(bankAccountMapper.toResponse(bankAccountSave));
     }
 
 }
