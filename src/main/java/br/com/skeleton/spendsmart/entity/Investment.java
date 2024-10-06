@@ -28,6 +28,8 @@ import java.time.LocalDateTime;
 @Table(name = "INVESTMENT_BALANCE")
 public class Investment {
 
+    public enum InvestmentStatus {ACTIVE, INACTIVE}
+
     @Id
     @Column(name = "ID_INVESTMENT_BALANCE")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +54,10 @@ public class Investment {
 
     @Column(name = "REDEMPTION_DATE")
     private LocalDate redemptionDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS")
+    private InvestmentStatus status;
 
     @CreationTimestamp
     @Column(name = "CREATED_AT")
