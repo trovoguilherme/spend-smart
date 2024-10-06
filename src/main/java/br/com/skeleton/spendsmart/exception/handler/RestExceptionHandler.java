@@ -1,5 +1,12 @@
-package br.com.skeleton.spendsmart.exception;
+package br.com.skeleton.spendsmart.exception.handler;
 
+import br.com.skeleton.spendsmart.exception.BusinessException;
+import br.com.skeleton.spendsmart.exception.InstallmentAllPaidException;
+import br.com.skeleton.spendsmart.exception.InsufficientBalanceWithdrawException;
+import br.com.skeleton.spendsmart.exception.NotFoundException;
+import br.com.skeleton.spendsmart.exception.ResponseException;
+import br.com.skeleton.spendsmart.exception.UsernameAlreadyExistsException;
+import br.com.skeleton.spendsmart.exception.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
