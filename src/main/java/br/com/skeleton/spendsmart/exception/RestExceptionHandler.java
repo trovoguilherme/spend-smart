@@ -34,46 +34,19 @@ public class RestExceptionHandler {
                 .build());
     }
 
-    @ExceptionHandler({InsufficientBalanceWithdrawException.class})
-    public ResponseEntity<ResponseException> insufficientBalanceWithdrawException(InsufficientBalanceWithdrawException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseException.builder()
-                .exceptionMessage(exception.getMessage())
-                .build());
-    }
-
-    @ExceptionHandler({BusinessException.class})
-    public ResponseEntity<ResponseException> businessException(BusinessException exception) {
-        return ResponseEntity.badRequest().body(ResponseException.builder()
-                .exceptionMessage(exception.getMessage())
-                .build());
-    }
-
-    @ExceptionHandler({UsernameAlreadyExistsException.class})
-    public ResponseEntity<ResponseException> usernameAlreadyExistsException(UsernameAlreadyExistsException exception) {
-        return ResponseEntity.badRequest().body(ResponseException.builder()
-                .exceptionMessage(exception.getMessage())
-                .build());
-    }
-
-    @ExceptionHandler({InstallmentAllPaidException.class})
-    public ResponseEntity<ResponseException> installmentAllPaidException(InstallmentAllPaidException exception) {
-        return ResponseEntity.badRequest().body(ResponseException.builder()
-                .exceptionMessage(exception.getMessage())
-                .build());
-    }
-
-    @ExceptionHandler({ValidationException.class})
-    public ResponseEntity<ResponseException> validationException(ValidationException exception) {
-        return ResponseEntity.badRequest().body(ResponseException.builder()
-                .exceptionMessage(exception.getMessage())
-                .build());
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<ResponseException> illegalArgumentException(IllegalArgumentException exception) {
-        return ResponseEntity.badRequest().body(ResponseException.builder()
-                .exceptionMessage(exception.getMessage())
-                .build());
+    @ExceptionHandler({
+            InsufficientBalanceWithdrawException.class,
+            BusinessException.class,
+            UsernameAlreadyExistsException.class,
+            InstallmentAllPaidException.class,
+            ValidationException.class,
+            IllegalArgumentException.class
+    })
+    public ResponseEntity<ResponseException> handleBadRequestExceptions(RuntimeException exception) {
+        return ResponseEntity.badRequest().body(
+                ResponseException.builder()
+                        .exceptionMessage(exception.getMessage())
+                        .build());
     }
 
 }
