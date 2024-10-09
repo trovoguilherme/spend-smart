@@ -9,9 +9,7 @@ import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.InstallmentAllPaidException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
-import br.com.skeleton.spendsmart.security.UserAuthenticated;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,20 +25,20 @@ public class ExpenseService {
     private final UserDetailsServiceImpl userDetailsService;
 
     public List<Expense> findAll(ExpenseStatus expenseStatus, ExpenseType expenseType, PaymentType paymentType) {
-        return expenseRepository.findAllByFilter(getActualUsername(), expenseStatus, expenseType, paymentType);
+        return expenseRepository.findAllByFilter(userDetailsService.getActualUser().getUsername(), expenseStatus, expenseType, paymentType);
     }
 
     public Expense findByName(String name) {
-        return expenseRepository.findByNameAndUserUsername(name, getActualUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
+        return expenseRepository.findByNameAndUserUsername(name, userDetailsService.getActualUser().getUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
     }
 
     public Expense findByIdAndUserUsername(final Long id) {
-        return expenseRepository.findByIdAndUserUsername(id, getActualUsername()).orElseThrow(() -> new NotFoundException("Id not found"));
+        return expenseRepository.findByIdAndUserUsername(id, userDetailsService.getActualUser().getUsername()).orElseThrow(() -> new NotFoundException("Id not found"));
     }
 
     @Transactional
     public Expense save(Expense expense) {
-        User user = ((UserAuthenticated) userDetailsService.loadUserByUsername(getActualUsername())).getUser();
+        User user = userDetailsService.getActualUser();
 
         existsByName(expense.getName());
 
@@ -113,10 +111,6 @@ public class ExpenseService {
         if (expenseRepository.existsByName(name)) {
             throw new BusinessException("Expense name already exists");
         }
-    }
-
-    private String getActualUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
 }
