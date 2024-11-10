@@ -42,6 +42,11 @@ public class SecurityConfig {
                         .requestMatchers("/authenticate").permitAll()
                         .requestMatchers("/user").permitAll()
                         .requestMatchers(toH2Console()).permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()))
