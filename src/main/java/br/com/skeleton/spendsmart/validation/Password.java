@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Password {
 
-    String message() default "O campo não cumpre com os requisitos de senha, uma letra maiúscula, um numero e um caracter especial";
+    String message() default "O campo não cumpre com os requisitos de senha, uma letra maiúscula, um numero, um caracter especial e 8 caracteres";
 
     Class<?>[] groups() default {};
 
