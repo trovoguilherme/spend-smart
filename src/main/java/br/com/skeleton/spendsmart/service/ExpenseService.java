@@ -9,12 +9,16 @@ import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.InstallmentAllPaidException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
+import br.com.skeleton.spendsmart.utils.CacheName;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExpenseService {
@@ -28,6 +32,7 @@ public class ExpenseService {
         return expenseRepository.findAllByFilter(userDetailsService.getActualUser().getUsername(), expenseStatus, expenseType, paymentType);
     }
 
+    @Cacheable(value = CacheName.EXPENSES, key = "#name")
     public Expense findByName(String name) {
         return expenseRepository.findByNameAndUserUsername(name, userDetailsService.getActualUser().getUsername()).orElseThrow(() -> new NotFoundException("Name not found"));
     }
