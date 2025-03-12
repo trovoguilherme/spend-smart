@@ -2,12 +2,14 @@ package br.com.skeleton.spendsmart.mapper;
 
 import br.com.skeleton.spendsmart.entity.Expense;
 import br.com.skeleton.spendsmart.entity.Installment;
+import br.com.skeleton.spendsmart.model.TopPayoffItem;
 import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
 import br.com.skeleton.spendsmart.resource.response.ExpenseDetailResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseSummaryResponse;
 import br.com.skeleton.spendsmart.resource.response.InstallmentDetailResponse;
+import br.com.skeleton.spendsmart.resource.response.TopPayoffItemsResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -52,6 +54,15 @@ public interface ExpenseMapper {
                 .totalUnpaid(totalUnpaid)
                 .expenseDetailResponseList(expenseDetailResponseList)
                 .build();
+    }
+
+    default List<TopPayoffItemsResponse> toPayoffExpense(List<TopPayoffItem> source) {
+        return source.stream().map(s -> TopPayoffItemsResponse.builder()
+                .expenseResponse(ExpenseResponse.builder().name(s.getExpense().getName()).build())
+                .totalInstallmentComparatorValue(s.getTotalInstallmentComparatorValue())
+                .totalComparatorValue(s.getTotalComparatorValue())
+                .expenseComparators(s.getComparatorExpenses().stream().map(Expense::getName).toList())
+                .build()).toList();
     }
 
     @Named("mapInstallments")

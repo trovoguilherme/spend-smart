@@ -9,6 +9,7 @@ import br.com.skeleton.spendsmart.resource.request.ExpenseRequest;
 import br.com.skeleton.spendsmart.resource.request.UpdateExpenseRequest;
 import br.com.skeleton.spendsmart.resource.response.ExpenseResponse;
 import br.com.skeleton.spendsmart.resource.response.ExpenseSummaryResponse;
+import br.com.skeleton.spendsmart.resource.response.TopPayoffItemsResponse;
 import br.com.skeleton.spendsmart.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,16 +60,28 @@ public class ExpenseResource {
         return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.findByName(name)));
     }
 
+//    @PostMapping
+//    public ResponseEntity<ExpenseResponse> save(@RequestBody @Valid ExpenseRequest expenseRequest) {
+//        Expense expense = service.save(expenseMapper.toExpense(expenseRequest));
+//
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(expense.getId())
+//                .toUri();
+//
+//        return ResponseEntity.created(location).body(expenseMapper.toExpenseResponse(expense));
+//    }
+
     @PostMapping
-    public ResponseEntity<ExpenseResponse> save(@RequestBody @Valid ExpenseRequest expenseRequest) {
-        Expense expense = service.save(expenseMapper.toExpense(expenseRequest));
+    public ResponseEntity<List<ExpenseResponse>> saveAll(@RequestBody @Valid List<ExpenseRequest> expenseRequests) {
+        List<Expense> expenses = service.saveAll(expenseRequests.stream().map(expenseMapper::toExpense).toList());
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(expense.getId())
-                .toUri();
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(expense.getId())
+//                .toUri();
 
-        return ResponseEntity.created(location).body(expenseMapper.toExpenseResponse(expense));
+        return ResponseEntity.created(null).body(expenses.stream().map(e -> expenseMapper.toExpenseResponse(e)).toList());
     }
 
     @PutMapping("/{id}")
@@ -88,6 +101,11 @@ public class ExpenseResource {
     public ResponseEntity<Void> deleteById(@PathVariable final Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/top-payoff-item")
+    public ResponseEntity<List<TopPayoffItemsResponse>> get() {
+        return ResponseEntity.ok(expenseMapper.toPayoffExpense(service.getTopPayoffItem()));
     }
 
 }

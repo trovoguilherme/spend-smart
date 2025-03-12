@@ -8,6 +8,7 @@ import br.com.skeleton.spendsmart.entity.enums.PaymentType;
 import br.com.skeleton.spendsmart.exception.BusinessException;
 import br.com.skeleton.spendsmart.exception.InstallmentAllPaidException;
 import br.com.skeleton.spendsmart.exception.NotFoundException;
+import br.com.skeleton.spendsmart.model.TopPayoffItem;
 import br.com.skeleton.spendsmart.repository.ExpenseRepository;
 import br.com.skeleton.spendsmart.utils.CacheName;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -60,6 +64,29 @@ public class ExpenseService {
     }
 
     @Transactional
+    public List<Expense> saveAll(List<Expense> expenses) {
+        User user = userDetailsService.getActualUser();
+        List<Expense> expenseSaved = new ArrayList<>();
+
+        expenses.forEach(e -> {
+            existsByName(e.getName());
+
+            e.setStatusToPending();
+            e.setUser(user);
+
+            expenseSaved.add(expenseRepository.save(e));
+
+            if (e.getInstallments() != null) {
+                e.getInstallments().forEach(installment -> installment.setExpense(e));
+                installmentService.saveAll(e.getInstallments());
+            }
+        });
+
+
+        return expenseSaved;
+    }
+
+    @Transactional
     public Expense update(Long id, String changeAgent, Expense expense) {
         existsByName(expense.getName());
         Expense expenseFound = findByIdAndUserUsername(id);
@@ -96,6 +123,29 @@ public class ExpenseService {
             installmentService.deleteByExpense(expense);
         }
         expenseRepository.deleteById(id);
+    }
+
+    public List<TopPayoffItem> getTopPayoffItem() {
+        final List<Expense> expenses = expenseRepository.findAll();
+
+        return expenses.stream().map(e -> {
+            AtomicReference<Double> valorRestante = new AtomicReference<>(e.getTotalUnpaidAmount().doubleValue());
+
+            List<Expense> expensesComparators = expenses.stream()
+                    .filter(other -> !other.equals(e))
+                    .sorted(Comparator.comparing(Expense::getTotalUnpaidAmount))
+                    .filter(other -> {
+                        double novoValor = valorRestante.get() - other.getTotalUnpaidAmount().doubleValue();
+
+                        if (novoValor >= 0) {
+                            valorRestante.set(novoValor);
+                            return true;
+                        }
+                        return false;
+                    }).toList();
+            return new TopPayoffItem(e, expensesComparators);
+        }).sorted(Comparator.comparing(TopPayoffItem::getTotalInstallmentComparatorValue)
+                        .thenComparing(TopPayoffItem::getTotalComparatorValue).reversed()).toList();
     }
 
     private void validateIfAlreadyPaid(Expense expense) {
