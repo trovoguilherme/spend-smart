@@ -60,29 +60,29 @@ public class ExpenseResource {
         return ResponseEntity.ok(expenseMapper.toExpenseResponse(service.findByName(name)));
     }
 
-//    @PostMapping
-//    public ResponseEntity<ExpenseResponse> save(@RequestBody @Valid ExpenseRequest expenseRequest) {
-//        Expense expense = service.save(expenseMapper.toExpense(expenseRequest));
-//
-//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(expense.getId())
-//                .toUri();
-//
-//        return ResponseEntity.created(location).body(expenseMapper.toExpenseResponse(expense));
-//    }
-
     @PostMapping
-    public ResponseEntity<List<ExpenseResponse>> saveAll(@RequestBody @Valid List<ExpenseRequest> expenseRequests) {
-        List<Expense> expenses = service.saveAll(expenseRequests.stream().map(expenseMapper::toExpense).toList());
+    public ResponseEntity<ExpenseResponse> save(@RequestBody @Valid ExpenseRequest expenseRequest) {
+        Expense expense = service.save(expenseMapper.toExpense(expenseRequest));
 
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(expense.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(expenseMapper.toExpenseResponse(expense));
+    }
+
+//    @PostMapping
+//    public ResponseEntity<List<ExpenseResponse>> saveAll(@RequestBody @Valid List<ExpenseRequest> expenseRequests) {
+//        List<Expense> expenses = service.saveAll(expenseRequests.stream().map(expenseMapper::toExpense).toList());
+//
 //        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 //                .path("/{id}")
 //                .buildAndExpand(expense.getId())
 //                .toUri();
-
-        return ResponseEntity.created(null).body(expenses.stream().map(e -> expenseMapper.toExpenseResponse(e)).toList());
-    }
+//
+//        return ResponseEntity.created(null).body(expenses.stream().map(e -> expenseMapper.toExpenseResponse(e)).toList());
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ExpenseResponse> update(@PathVariable Long id,
